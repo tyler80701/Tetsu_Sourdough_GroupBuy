@@ -1,0 +1,864 @@
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
+import { ShoppingCart, Plus, Minus, Check, Star, Info, Flame, Trash2, Heart, Sparkles, ChefHat, Leaf, Wheat, ThermometerSun, Clock, ChevronLeft, ChevronRight, Camera } from 'lucide-react';
+
+// --- 資料區 ---
+const CAROUSEL_IMAGES = [
+  'https://lh3.googleusercontent.com/pw/AP1GczPQmTUcnEOvugEtx-cDKCouMJ4F95r5Hi3G0MxT4Ivdt2lVDOpANpFOE31ykZSTzqxASh0aR1eyRkNOImg82e161tQ9X-YHcKpG8hyHPcwVv17TkRQ5ZrZX2z_nhhaMrgX-tVH3L96QajhksS43zM48SQ=w1108-h1477-s-no-gm?authuser=0',
+  'https://lh3.googleusercontent.com/pw/AP1GczPBIXbZyVbie4L-g3L7PTkaeHH2n3371asv7nVwn6xbSVv0I1mJFTrK1Lqiq5f4fyUItNoV3OkQ7x2kUwItOkXu9_rv5Ry1E4ZjdL9sAMiygWsfVZPmN8dG3ZjjXyIVbW3meovvf8RYJ4StpY4-tYI_zQ=w1108-h1477-s-no-gm?authuser=0',
+  'https://lh3.googleusercontent.com/pw/AP1GczOfcVXBv12Aas4MyCdZryThslj9TtGbQPXWsGPOQHiwEqgDrHB88yc-uIi46x7Vsd4yUdFNqSoo0oSi3dmyY8uO0dzuifFMgWDfrr0PuBvu05r9bKWAJutE-VhNtPRYumvtJbj3RUmy93VhdVaVoKp-KQ=w1108-h1477-s-no-gm?authuser=0',
+  'https://lh3.googleusercontent.com/pw/AP1GczNzGyMKFqhXVs-5r9RX9flmu3iynQuICJYOSNQjZnBbJUCJvDGU16wAgi_nfKTJsfY8VEG562jgaOlxQYPz2eOQFc3bwt1KM3sbS0S6d9dBbGv7Bi1d3IvuMaysU36DUB81PDp4IQLHi-l3ceJ0NOxHvw=w1108-h1477-s-no-gm?authuser=0',
+  'https://lh3.googleusercontent.com/pw/AP1GczOnVxlPDo5ngMZEsmrTbAkjpRQoKwebHiRUDCsl4ipkTytFFyZeIwX_jLQlVlZT9BQUvgOrNdAinuUsI1rQVejWPrqQ20moymkn8Wj_S5DlNPIrTZqEWtMSfv221_AROMIQZ--VqcjpuIyHlz-c-NaIyQ=w1477-h1108-s-no-gm?authuser=0',
+  'https://lh3.googleusercontent.com/pw/AP1GczNpO7tk5Fp23G5v6iytbJEccThqvbXrLiA8jjrpe0WqVSpZMZTYASuVNsh8_p3i2Izp9CEmQr4-WmhhU-YgEXiXOiI79aXeXaOe9t0YIN6oWgAlmpRhK-m12wQqPAdw5BezJg2VSDKvap95C0KdACIIkw=w1108-h1477-s-no-gm?authuser=0'
+];
+
+const CLASSIC_BREADS = [
+  { id: 'c1', name: '核桃蔓越莓鄉村麵包', desc: '經典不敗，堅果香氣與酸甜果乾的完美結合。' },
+  { id: 'c2', name: '黑橄欖山羊乳酪麵包', desc: '地中海風情，濃郁乳酪與黑橄欖鹹香交織。' },
+  { id: 'c3', name: '巧克力莓果麵包', desc: '藍莓、草莓、蔓越莓，加上苦甜巧克力，奢華享受。' },
+  { id: 'c4', name: '抹茶白巧克力麵包', desc: '日式微苦抹茶搭配香甜白巧克力，茶香四溢。' },
+  { id: 'c5', name: '自家醃漬雪裡紅培根麵包', desc: '獨家創意鹹麵包，脆口雪裡紅與煙燻培根超對味！' },
+];
+
+const CUSTOM_BASES = ['原味', '全麥', '抹茶', '巧克力', '百里香'];
+
+const CUSTOM_FILLINGS = {
+  sweet: [
+    { name: '野生藍莓', premium: true },
+    { name: '草莓', premium: false },
+    { name: '開心果', premium: true },
+    { name: '蔓越莓', premium: false },
+    { name: '蘭姆葡萄', premium: false },
+    { name: '蜜紅豆', premium: false },
+  ],
+  savory: [
+    { name: '黑橄欖', premium: false },
+    { name: '墨西哥辣椒', premium: false },
+    { name: '乳酪', premium: false },
+    { name: '自家醃雪裡紅', premium: false },
+    { name: '培根', premium: false },
+    { name: '油漬番茄', premium: false },
+  ],
+  neutral: [
+    { name: '核桃', premium: false },
+    { name: '腰果', premium: false },
+    { name: '南瓜子', premium: false },
+    { name: '白玉湯圓', premium: false },
+  ]
+};
+
+// --- 元件區 ---
+export default function BakeryLandingPage() {
+  const [cart, setCart] = useState([]);
+  const [buyerInfo, setBuyerInfo] = useState({ name: '', phone: '', department: '' });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [orderSuccess, setOrderSuccess] = useState(false);
+
+  // 新增：Toast 提示狀態與結帳區 Ref
+  const [toastMsg, setToastMsg] = useState('');
+  const cartSectionRef = useRef(null);
+
+  // 輪播狀態
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+  // 客製化麵包狀態
+  const [customBase, setCustomBase] = useState(CUSTOM_BASES[0]);
+  const [customSelectedFillings, setCustomSelectedFillings] = useState([]);
+  const [customQuantity, setCustomQuantity] = useState(1); // 客製化最少1顆
+
+  // 計算購物車內總數量
+  const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+
+  // SEO 與 Meta Tags 設定 (動態注入)
+  useEffect(() => {
+    const title = "Tetsu 烘焙坊 | 內部專屬天然酵母麵包團購";
+    const description = "Tetsu 職人手作天然老麵麵包，低GI、不脹氣！提供多款人氣經典口味與專屬客製款，450克巨無霸大滿足，公司內部專屬優惠團購中。";
+    const ogImage = "https://lh3.googleusercontent.com/pw/AP1GczOnVxlPDo5ngMZEsmrTbAkjpRQoKwebHiRUDCsl4ipkTytFFyZeIwX_jLQlVlZT9BQUvgOrNdAinuUsI1rQVejWPrqQ20moymkn8Wj_S5DlNPIrTZqEWtMSfv221_AROMIQZ--VqcjpuIyHlz-c-NaIyQ=w1477-h1108-s-no-gm?authuser=0";
+
+    document.title = title;
+
+    const setMetaTag = (name, content, isProperty = false) => {
+      const attribute = isProperty ? 'property' : 'name';
+      let element = document.querySelector(`meta[${attribute}="${name}"]`);
+      if (!element) {
+        element = document.createElement('meta');
+        element.setAttribute(attribute, name);
+        document.head.appendChild(element);
+      }
+      element.setAttribute('content', content);
+    };
+
+    // Meta Tags
+    setMetaTag('description', description);
+    
+    // Open Graph (OG) Tags for Social Sharing
+    setMetaTag('og:title', title, true);
+    setMetaTag('og:description', description, true);
+    setMetaTag('og:image', ogImage, true);
+    setMetaTag('og:type', 'website', true);
+  }, []);
+
+  // 顯示加入購物車提示
+  const showToast = (itemName) => {
+    setToastMsg(`已將「${itemName}」加入購物車！`);
+    // 2.5 秒後自動隱藏
+    setTimeout(() => {
+      setToastMsg('');
+    }, 2500);
+  };
+
+  // 輪播自動播放邏輯
+  const nextSlide = useCallback(() => {
+    setCurrentSlide((prev) => (prev === CAROUSEL_IMAGES.length - 1 ? 0 : prev + 1));
+  }, []);
+
+  const prevSlide = () => {
+    setCurrentSlide((prev) => (prev === 0 ? CAROUSEL_IMAGES.length - 1 : prev - 1));
+  };
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      nextSlide();
+    }, 4000); // 每4秒切換一張
+    return () => clearInterval(timer);
+  }, [nextSlide]);
+
+  // 動畫樣式
+  useEffect(() => {
+    const style = document.createElement('style');
+    style.innerHTML = `
+      @keyframes floatUp {
+        0% { transform: translateY(0) scale(1); opacity: 0; }
+        20% { opacity: 0.8; }
+        100% { transform: translateY(-50px) scale(1.5); opacity: 0; }
+      }
+      .steam-anim {
+        animation: floatUp 3s ease-in-out infinite;
+      }
+      .steam-anim-delay-1 { animation-delay: 1s; }
+      .steam-anim-delay-2 { animation-delay: 2s; }
+      
+      @keyframes pulseGlow {
+        0%, 100% { box-shadow: 0 0 0 0 rgba(234, 88, 12, 0.4); }
+        50% { box-shadow: 0 0 0 10px rgba(234, 88, 12, 0); }
+      }
+      .btn-pulse {
+        animation: pulseGlow 2s infinite;
+      }
+    `;
+    document.head.appendChild(style);
+    return () => document.head.removeChild(style);
+  }, []);
+
+  // 計算客製化單顆價格
+  const currentCustomPrice = useMemo(() => {
+    const basePrice = 250;
+    const premiumCount = customSelectedFillings.filter(f => f.premium).length;
+    const totalCount = customSelectedFillings.length;
+    
+    // 超過兩樣，每一樣多30
+    const extraCountCharge = Math.max(0, totalCount - 2) * 30;
+    // Premium 原料，不管有沒有超過兩樣都要加30
+    const premiumCharge = premiumCount * 30;
+    
+    return basePrice + extraCountCharge + premiumCharge;
+  }, [customSelectedFillings]);
+
+  // 處理客製化配料選擇
+  const handleFillingToggle = (filling) => {
+    setCustomSelectedFillings(prev => {
+      const exists = prev.find(f => f.name === filling.name);
+      if (exists) {
+        return prev.filter(f => f.name !== filling.name);
+      } else {
+        return [...prev, filling];
+      }
+    });
+  };
+
+  // 加入購物車 (經典)
+  const addClassicToCart = (bread) => {
+    setCart(prev => {
+      const existing = prev.find(item => item.id === bread.id);
+      if (existing) {
+        return prev.map(item => item.id === bread.id ? { ...item, quantity: item.quantity + 1 } : item);
+      }
+      return [...prev, { ...bread, type: 'classic', price: 250, quantity: 1 }];
+    });
+    showToast(bread.name);
+  };
+
+  // 加入購物車 (客製化)
+  const addCustomToCart = () => {
+    if (customSelectedFillings.length === 0) {
+      alert("請至少選擇一樣配料唷！");
+      return;
+    }
+    const cartItem = {
+      id: `custom-${Date.now()}`,
+      type: 'custom',
+      name: `客製化: ${customBase}麵糰`,
+      desc: `配料: ${customSelectedFillings.map(f => f.name).join('、')}`,
+      price: currentCustomPrice,
+      quantity: customQuantity
+    };
+    
+    setCart(prev => [...prev, cartItem]);
+    
+    // 重置客製化表單
+    setCustomBase(CUSTOM_BASES[0]);
+    setCustomSelectedFillings([]);
+    setCustomQuantity(1);
+    
+    // 觸發視覺提示
+    showToast(`客製款: ${customBase}麵糰`);
+  };
+
+  const updateCartQuantity = (id, delta) => {
+    setCart(prev => prev.map(item => {
+      if (item.id === id) {
+        // 最低數量為1
+        const minQty = 1;
+        const newQty = Math.max(minQty, item.quantity + delta);
+        return { ...item, quantity: newQty };
+      }
+      return item;
+    }));
+  };
+
+  const removeFromCart = (id) => {
+    setCart(prev => prev.filter(item => item.id !== id));
+  };
+
+  const cartTotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (cart.length === 0) {
+      alert("購物車是空的唷，趕快挑選喜歡的麵包吧！");
+      return;
+    }
+    if (!buyerInfo.name || !buyerInfo.phone || !buyerInfo.department) {
+      alert("請填寫完整的聯絡資訊與部門！");
+      return;
+    }
+    
+    setIsSubmitting(true);
+
+    // 1. 整理要傳送的訂單明細字串
+    const orderDetails = cart.map(item => {
+      if (item.type === 'custom') {
+        return `[客製化] ${item.name}\n  └ ${item.desc}\n  └ 數量: ${item.quantity} (單價$${item.price})`;
+      }
+      return `[經典] ${item.name} x${item.quantity}`;
+    }).join('\n\n');
+
+    // 2. 準備傳送的資料
+    const payload = {
+      name: buyerInfo.name,
+      phone: buyerInfo.phone,
+      department: buyerInfo.department,
+      order: orderDetails,
+      total: cartTotal
+    };
+
+    // ⚠️ 部署到 Google Apps Script 後，將真實網址貼在這裡
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyWHNKHiuJVL7-_shbfdq9u7hWbkL3b3q5XgJ3GJnWAL66WBZksHwBU4vflGAGh9j36YA/exec'; 
+
+    try {
+      if (SCRIPT_URL.includes('YOUR_SCRIPT_ID')) {
+        // 測試模式：因為尚未填入真實的 Apps Script 網址，這裡先用模擬延遲代替發送，避免產生 Fetch Error
+        console.log("尚未設定真實 API，模擬送出以下訂單資料：", payload);
+        await new Promise(resolve => setTimeout(resolve, 1500));
+      } else {
+        // 3. 實際發送資料到 Google 試算表
+        await fetch(SCRIPT_URL, {
+          method: 'POST',
+          mode: 'no-cors', // 加入 no-cors 模式，避免瀏覽器因 Google Apps Script 常見的跨域問題而阻擋請求
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' }, 
+          body: JSON.stringify(payload)
+        });
+      }
+      
+      setOrderSuccess(true);
+      setCart([]);
+    } catch (error) {
+      console.error('訂單送出失敗:', error);
+      alert('哎呀！訂單送出失敗了，請檢查您的 Apps Script 網址是否正確，或稍後再試。');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  if (orderSuccess) {
+    return (
+      <div className="min-h-screen bg-amber-50 flex items-center justify-center p-4">
+        <div className="bg-white p-8 rounded-2xl shadow-xl max-w-md w-full text-center">
+          <div className="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6">
+            <Check size={40} />
+          </div>
+          <h2 className="text-2xl font-bold text-amber-900 mb-2">訂購成功！</h2>
+          <p className="text-amber-700 mb-6">
+            親愛的 {buyerInfo.name}，我們已收到您的訂單。<br/>
+            期待讓您品嚐到充滿溫度的手作麵包！
+          </p>
+          <button 
+            onClick={() => { setOrderSuccess(false); setBuyerInfo({ name: '', phone: '', department: '' }); }}
+            className="w-full py-3 bg-amber-600 text-white rounded-xl font-bold hover:bg-amber-700 transition-colors"
+          >
+            返回首頁
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-[#FDFBF7] font-sans text-stone-800 pb-32">
+      {/* 導覽列 */}
+      <nav className="fixed top-0 w-full bg-white/90 backdrop-blur-md shadow-sm z-50 px-6 py-4 flex justify-between items-center">
+        <div className="flex items-center gap-2 text-amber-700 font-bold text-xl tracking-wider">
+          <ChefHat size={28} />
+          <span>Tetsu 烘焙坊 | 內部專屬</span>
+        </div>
+        <div className="flex items-center gap-2 font-medium text-amber-900">
+          <ShoppingCart size={20} />
+          <span className="bg-amber-100 px-2 py-0.5 rounded-full text-sm font-bold">{totalItems}</span>
+        </div>
+      </nav>
+
+      {/* Hero Section */}
+      <section className="relative pt-24 pb-16 px-4 overflow-hidden">
+        <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-amber-100/50 to-transparent -z-10"></div>
+        
+        {/* SVG 動畫點綴 */}
+        <div className="absolute top-32 right-10 opacity-40 hidden md:block text-amber-600">
+           <svg width="100" height="100" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
+             <path className="steam-anim" d="M18 13V8l-2-2-2 2v5"/>
+             <path className="steam-anim steam-anim-delay-1" d="M12 13V8l-2-2-2 2v5"/>
+             <path className="steam-anim steam-anim-delay-2" d="M6 13V8L4 6 2 8v5"/>
+           </svg>
+        </div>
+
+        <div className="max-w-4xl mx-auto text-center">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-red-100 text-red-700 font-bold text-sm mb-6 animate-pulse">
+            <Flame size={16} /> 試營運特別企劃 · 限量發售
+          </div>
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-amber-950 mb-6 leading-tight">
+            Tetsu 職人手作<br/>
+            <span className="text-amber-600">天然酵母老麵麵包</span>
+          </h1>
+          <p className="text-lg md:text-xl text-stone-600 mb-10 max-w-2xl mx-auto leading-relaxed">
+            野生酵母與乳酸菌的完美平衡，幫你消化難搞的麩質。<br className="hidden md:block"/>
+            <strong className="text-amber-800">低 GI、不脹氣，450克巨無霸份量</strong>，現在為同事獻上專屬優惠。
+          </p>
+
+          {/* 價格大看板 */}
+          <div className="bg-white border-2 border-amber-200 rounded-3xl p-6 md:p-8 max-w-lg mx-auto shadow-xl relative transform hover:scale-105 transition-transform">
+            <div className="absolute -top-4 -right-4 bg-red-500 text-white w-16 h-16 rounded-full flex items-center justify-center font-bold rotate-12 shadow-lg border-2 border-white">
+              省$50
+            </div>
+            <div className="text-stone-500 font-medium mb-1">原價 $300 / 顆</div>
+            <div className="flex items-center justify-center gap-4 text-5xl font-black text-amber-700">
+              <span className="text-3xl line-through text-stone-300">$300</span>
+              <span>$250</span>
+            </div>
+            <div className="mt-4 text-sm text-amber-800 bg-amber-50 py-2 rounded-lg font-medium">
+              ✨ 同事獨享「友情價」✨
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Tetsu 職人理念區 */}
+      <section className="max-w-6xl mx-auto px-4 py-8">
+        <div className="bg-amber-900 rounded-3xl p-8 md:p-12 text-white shadow-xl relative overflow-hidden">
+          <div className="absolute -right-10 -bottom-10 opacity-10 text-amber-100 pointer-events-none">
+            <Wheat size={300} strokeWidth={1} />
+          </div>
+          <div className="relative z-10 max-w-4xl mx-auto">
+            <h2 className="text-3xl md:text-4xl font-bold mb-6 flex items-center gap-3">
+              <Leaf className="text-green-400" /> 為什麼選擇 Tetsu 的天然老麵？
+            </h2>
+            <p className="text-amber-100 text-lg mb-8 leading-relaxed">
+              自家天然培養老麵酵種，富含<strong>野生酵母、乳酸菌與醋酸菌</strong>！多樣化的菌種能幫你消化難搞的麩質，享受美味<strong>吃了不脹氣</strong>。相較於發酵快卻容易脹氣的商業酵母，我們嚴格掌控發酵時間，讓麵糰不死酸，保留最純粹的麥香。
+            </p>
+            
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
+              {['🌟 低 GI', '🌟 不脹氣', '🌟 不易老化的結構', '🌟 更多發酵風味物質', '🌟 蛋白質分解為鮮味', '🌟 怡人的微酸尾韻'].map(trait => (
+                <div key={trait} className="bg-amber-800/80 px-4 py-3 rounded-xl border border-amber-700/50 text-amber-50 font-medium flex items-center justify-center text-center">
+                  {trait}
+                </div>
+              ))}
+            </div>
+
+            <div className="bg-amber-50 text-amber-950 p-6 rounded-2xl shadow-inner relative">
+              <h3 className="font-bold text-xl mb-3 flex items-center gap-2"><ChefHat size={20} className="text-amber-600"/> 頂級麵粉配方</h3>
+              <p className="text-amber-800 leading-relaxed font-medium">
+                使用 <span className="text-amber-600 font-bold">日本北海道麵粉</span> 調和 <span className="text-amber-600 font-bold">歐洲高灰質麵粉</span>，兼具 Q 彈與天然麥香。
+                麵粉甘甜帶生津微酸，空口吃也不口渴！吃不完僅需密封丟冷凍，切片回烤就有如剛出爐的美味。
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 產品照片輪播區塊 (新增) */}
+      <section className="max-w-4xl mx-auto px-4 py-8">
+        <div className="flex items-center justify-center gap-2 mb-6">
+          <Camera className="text-stone-400" size={24} />
+          <h2 className="text-xl font-bold text-stone-500 tracking-wider">職人手作實拍</h2>
+        </div>
+        
+        <div className="relative group rounded-3xl overflow-hidden shadow-xl bg-stone-100 h-[500px] md:h-[600px]">
+          {/* 圖片容器 */}
+          <div 
+            className="flex transition-transform duration-700 ease-in-out h-full"
+            style={{ transform: `translateX(-${currentSlide * 100}%)` }}
+          >
+            {CAROUSEL_IMAGES.map((src, index) => (
+              <div key={index} className="w-full h-full flex-shrink-0 relative">
+                <img 
+                  src={src} 
+                  alt={`Tetsu 職人麵包實拍 ${index + 1}`} 
+                  className="w-full h-full object-cover"
+                />
+                {/* 加上一層微微的暗角漸層讓畫面更有質感 */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent pointer-events-none"></div>
+              </div>
+            ))}
+          </div>
+
+          {/* 左右切換按鈕 */}
+          <button 
+            onClick={prevSlide}
+            className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/60 hover:bg-white text-stone-800 flex items-center justify-center backdrop-blur-sm shadow-md transition-all opacity-0 group-hover:opacity-100"
+          >
+            <ChevronLeft size={24} />
+          </button>
+          <button 
+            onClick={nextSlide}
+            className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/60 hover:bg-white text-stone-800 flex items-center justify-center backdrop-blur-sm shadow-md transition-all opacity-0 group-hover:opacity-100"
+          >
+            <ChevronRight size={24} />
+          </button>
+
+          {/* 底部指示點 */}
+          <div className="absolute bottom-6 left-1/2 -translate-y-1/2 flex gap-2">
+            {CAROUSEL_IMAGES.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => setCurrentSlide(index)}
+                className={`w-2.5 h-2.5 rounded-full transition-all shadow-sm ${
+                  currentSlide === index ? 'bg-white w-6' : 'bg-white/50 hover:bg-white/80'
+                }`}
+              />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* 回烤教學區 */}
+      <section className="max-w-6xl mx-auto px-4 py-8 mb-4">
+        <div className="flex items-center gap-3 mb-6">
+          <ThermometerSun className="text-orange-500" size={28} />
+          <h2 className="text-2xl font-bold text-stone-800">Tetsu 推薦回烤方式</h2>
+          <div className="h-px bg-stone-200 flex-grow ml-4"></div>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="bg-white p-6 rounded-2xl border border-stone-100 shadow-sm flex items-start gap-4">
+            <div className="w-12 h-12 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center shrink-0">
+              <Flame size={24} />
+            </div>
+            <div>
+              <h4 className="font-bold text-lg mb-1 text-stone-800">烤箱</h4>
+              <p className="text-stone-600 text-sm">180度烤 5 分鐘<br/><span className="text-stone-400">（喜歡鬆軟感可先噴點水）</span></p>
+            </div>
+          </div>
+          <div className="bg-white p-6 rounded-2xl border border-stone-100 shadow-sm flex items-start gap-4">
+             <div className="w-12 h-12 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center shrink-0">
+              <Sparkles size={24} />
+            </div>
+            <div>
+              <h4 className="font-bold text-lg mb-1 text-stone-800">微波爐</h4>
+              <p className="text-stone-600 text-sm">表面噴點水後<br/>高火微波 30 秒</p>
+            </div>
+          </div>
+          <div className="bg-white p-6 rounded-2xl border border-stone-100 shadow-sm flex items-start gap-4">
+             <div className="w-12 h-12 bg-green-100 text-green-600 rounded-full flex items-center justify-center shrink-0">
+              <Clock size={24} />
+            </div>
+            <div>
+              <h4 className="font-bold text-lg mb-1 text-stone-800">大同電鍋</h4>
+              <p className="text-stone-600 text-sm">外鍋不加水<br/>乾烙 10 分鐘</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 經典口味區 (改為純文字卡片) */}
+      <section className="max-w-6xl mx-auto px-4 py-12">
+        <div className="flex items-center gap-3 mb-8">
+          <Star className="text-amber-500 fill-amber-500" />
+          <h2 className="text-3xl font-bold text-amber-950">人氣經典口味</h2>
+          <div className="h-px bg-amber-200 flex-grow ml-4"></div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {CLASSIC_BREADS.map(bread => (
+            <div key={bread.id} className="bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all border border-stone-100 p-6 flex flex-col relative overflow-hidden group">
+              {/* 裝飾背景 */}
+              <div className="absolute -right-6 -top-6 w-24 h-24 bg-amber-50 rounded-full group-hover:bg-amber-100 transition-colors z-0"></div>
+              
+              <div className="relative z-10 flex-grow">
+                <div className="inline-block bg-amber-100 text-amber-800 text-xs font-bold px-2 py-1 rounded-md mb-3">
+                  450g 超大份量
+                </div>
+                <h3 className="text-xl font-bold text-stone-800 mb-2">{bread.name}</h3>
+                <p className="text-stone-500 text-sm mb-6">{bread.desc}</p>
+              </div>
+              
+              <div className="relative z-10 flex items-center justify-between mt-auto pt-4 border-t border-stone-50">
+                <div className="font-black text-2xl text-amber-600">$250</div>
+                <button 
+                  onClick={() => addClassicToCart(bread)}
+                  className="flex items-center gap-2 bg-stone-800 text-white hover:bg-amber-600 px-4 py-2.5 rounded-xl font-bold transition-colors shadow-sm"
+                >
+                  <Plus size={18} /> 加入
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* 客製化專區 */}
+      <section className="max-w-6xl mx-auto px-4 py-16">
+        <div className="bg-gradient-to-br from-stone-900 to-amber-950 rounded-3xl p-1 shadow-2xl overflow-hidden">
+          <div className="bg-[#FAF7F2] rounded-[1.4rem] p-6 md:p-10">
+            <div className="text-center mb-10">
+              <div className="inline-flex items-center justify-center w-16 h-16 bg-amber-100 text-amber-600 rounded-full mb-4">
+                <Sparkles size={32} />
+              </div>
+              <h2 className="text-3xl md:text-4xl font-bold text-amber-950 mb-3">專屬客製款</h2>
+              <p className="text-amber-800 font-medium">打造你夢想中的完美麵包（須2天前預訂）</p>
+              
+              <div className="mt-6 flex flex-col md:flex-row items-center justify-center gap-4 text-sm text-stone-600 bg-white inline-block px-6 py-4 rounded-2xl shadow-sm border border-amber-100">
+                <div className="flex items-center gap-2"><Check size={16} className="text-green-500"/> 自選麵糰 + 任2樣配料 = $250</div>
+                <div className="hidden md:block w-px h-4 bg-stone-300"></div>
+                <div className="flex items-center gap-2"><Info size={16} className="text-amber-500"/> 超過2樣，每加一樣 +$30</div>
+                <div className="hidden md:block w-px h-4 bg-stone-300"></div>
+                <div className="flex items-center gap-2"><Star size={16} className="text-purple-500"/> 高成本配料(標示*) 固定 +$30</div>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+              {/* 左側：選項區 */}
+              <div className="lg:col-span-8 space-y-8">
+                
+                {/* 步驟 1 */}
+                <div className="bg-white p-6 rounded-2xl shadow-sm border border-stone-100">
+                  <h3 className="text-lg font-bold text-stone-800 mb-4 flex items-center gap-2">
+                    <span className="bg-amber-600 text-white w-6 h-6 rounded-full flex items-center justify-center text-sm">1</span>
+                    選擇麵糰基底
+                  </h3>
+                  <div className="flex flex-wrap gap-3">
+                    {CUSTOM_BASES.map(base => (
+                      <button
+                        key={base}
+                        onClick={() => setCustomBase(base)}
+                        className={`px-5 py-3 rounded-xl font-medium border-2 transition-all ${
+                          customBase === base 
+                          ? 'border-amber-500 bg-amber-50 text-amber-700 shadow-md transform scale-105' 
+                          : 'border-stone-200 text-stone-500 hover:border-amber-300 hover:bg-stone-50'
+                        }`}
+                      >
+                        {base}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* 步驟 2 */}
+                <div className="bg-white p-6 rounded-2xl shadow-sm border border-stone-100">
+                  <h3 className="text-lg font-bold text-stone-800 mb-4 flex items-center gap-2">
+                    <span className="bg-amber-600 text-white w-6 h-6 rounded-full flex items-center justify-center text-sm">2</span>
+                    挑選心儀配料 <span className="text-sm font-normal text-stone-500 ml-2">(已選 {customSelectedFillings.length} 樣)</span>
+                  </h3>
+                  
+                  {Object.entries({ '甜蜜風味': CUSTOM_FILLINGS.sweet, '鹹香誘惑': CUSTOM_FILLINGS.savory, '百搭口感': CUSTOM_FILLINGS.neutral }).map(([category, items]) => (
+                    <div key={category} className="mb-6 last:mb-0">
+                      <div className="text-sm font-bold text-stone-400 mb-3">{category}</div>
+                      <div className="flex flex-wrap gap-3">
+                        {items.map(filling => {
+                          const isSelected = customSelectedFillings.some(f => f.name === filling.name);
+                          return (
+                            <button
+                              key={filling.name}
+                              onClick={() => handleFillingToggle(filling)}
+                              className={`relative px-4 py-2 rounded-lg border-2 text-sm font-medium transition-all flex items-center gap-1 ${
+                                isSelected 
+                                ? 'border-amber-500 bg-amber-500 text-white shadow-md' 
+                                : 'border-stone-200 text-stone-600 hover:border-amber-300'
+                              }`}
+                            >
+                              {isSelected && <Check size={14} />}
+                              {filling.name}
+                              {filling.premium && <span className={`${isSelected ? 'text-amber-200' : 'text-purple-500'} ml-1`}>*</span>}
+                            </button>
+                          )
+                        })}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+              </div>
+
+              {/* 右側：計算與加入區 */}
+              <div className="lg:col-span-4">
+                <div className="bg-white rounded-2xl shadow-xl border border-amber-100 p-6 sticky top-24">
+                  <h3 className="text-xl font-bold text-stone-800 mb-4 border-b border-stone-100 pb-4">客製化預覽</h3>
+                  
+                  <div className="space-y-3 mb-6">
+                    <div className="flex justify-between text-stone-600">
+                      <span>基底</span>
+                      <span className="font-bold text-stone-800">{customBase}麵糰</span>
+                    </div>
+                    <div className="flex justify-between text-stone-600 items-start">
+                      <span>配料</span>
+                      <div className="text-right flex flex-col items-end">
+                        {customSelectedFillings.length === 0 ? (
+                          <span className="text-stone-400 italic">尚未選擇</span>
+                        ) : (
+                          customSelectedFillings.map(f => (
+                            <span key={f.name} className="font-bold text-stone-800 text-sm bg-stone-100 px-2 py-0.5 rounded mb-1">
+                              {f.name} {f.premium && '(+$30)'}
+                            </span>
+                          ))
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="bg-amber-50 rounded-xl p-4 mb-6">
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="text-amber-800 font-bold">單顆金額計算</span>
+                      <span className="text-2xl font-black text-amber-600">${currentCustomPrice}</span>
+                    </div>
+                    <div className="text-xs text-amber-700/80 space-y-1 mt-3 border-t border-amber-200/50 pt-2">
+                      <p>基本價(含2樣一般配料): $250</p>
+                      {customSelectedFillings.length > 2 && (
+                        <p>超過 {customSelectedFillings.length - 2} 樣配料: +${(customSelectedFillings.length - 2) * 30}</p>
+                      )}
+                      {customSelectedFillings.filter(f=>f.premium).length > 0 && (
+                        <p>高成本配料 (*): +${customSelectedFillings.filter(f=>f.premium).length * 30}</p>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="mb-6">
+                    <label className="block text-sm font-bold text-stone-600 mb-2">購買數量</label>
+                    <div className="flex items-center gap-4">
+                      <button 
+                        onClick={() => setCustomQuantity(Math.max(1, customQuantity - 1))}
+                        disabled={customQuantity <= 1}
+                        className="w-10 h-10 rounded-full border border-stone-200 flex items-center justify-center text-stone-500 hover:bg-stone-50 disabled:opacity-50"
+                      >
+                        <Minus size={16} />
+                      </button>
+                      <span className="text-xl font-bold w-8 text-center">{customQuantity}</span>
+                      <button 
+                        onClick={() => setCustomQuantity(customQuantity + 1)}
+                        className="w-10 h-10 rounded-full border border-stone-200 flex items-center justify-center text-stone-500 hover:bg-stone-50"
+                      >
+                        <Plus size={16} />
+                      </button>
+                    </div>
+                  </div>
+
+                  <button 
+                    onClick={addCustomToCart}
+                    className="w-full py-4 bg-stone-900 text-white rounded-xl font-bold text-lg hover:bg-stone-800 transition-colors shadow-lg shadow-stone-900/20 flex items-center justify-center gap-2 group"
+                  >
+                    <Heart className="group-hover:text-red-400 transition-colors" size={20} />
+                    將我的專屬配方加入購物車
+                  </button>
+
+                  {/* 範例提示 */}
+                  <div className="mt-6 pt-6 border-t border-stone-100 space-y-3">
+                    <p className="text-xs text-stone-400 font-bold uppercase tracking-wider mb-2">💡 價格試算範例</p>
+                    <div className="text-xs text-stone-500 bg-stone-50 p-2 rounded">
+                      <strong className="text-stone-700">範例一：</strong> 全麥 + 核桃 + 蔓越莓 = $250
+                    </div>
+                    <div className="text-xs text-stone-500 bg-stone-50 p-2 rounded">
+                      <strong className="text-stone-700">範例二：</strong> 抹茶 + 紅豆 + 乳酪 + 白玉湯圓 = 250+30(第三樣) = $280
+                    </div>
+                    <div className="text-xs text-stone-500 bg-stone-50 p-2 rounded">
+                      <strong className="text-stone-700">範例三：</strong> 百里香 + 開心果* + 乳酪 = 250+30(高成本) = $280
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 結帳表單與購物車明細 */}
+      <section ref={cartSectionRef} className="max-w-4xl mx-auto px-4 py-12 scroll-mt-24">
+        <div className="bg-white rounded-3xl shadow-xl overflow-hidden border border-stone-100 flex flex-col md:flex-row">
+          
+          {/* 左側：購物車清單 */}
+          <div className="w-full md:w-1/2 bg-stone-50 p-6 md:p-8 flex flex-col">
+            <h3 className="text-2xl font-bold text-stone-800 mb-6 flex items-center gap-2">
+              <ShoppingCart className="text-amber-600" />
+              購物清單
+            </h3>
+            
+            {cart.length === 0 ? (
+              <div className="flex-grow flex flex-col items-center justify-center text-stone-400 py-12">
+                <ShoppingCart size={48} className="mb-4 opacity-20" />
+                <p>還沒有挑選任何麵包喔！</p>
+              </div>
+            ) : (
+              <div className="flex-grow space-y-4 overflow-y-auto pr-2 max-h-[400px]">
+                {cart.map(item => (
+                  <div key={item.id} className="bg-white p-4 rounded-xl shadow-sm border border-stone-100 relative pr-10">
+                    <div className="flex justify-between items-start mb-2">
+                      <div>
+                        <div className="font-bold text-stone-800">{item.name}</div>
+                        {item.type === 'custom' && (
+                          <div className="text-xs text-stone-500 mt-1">{item.desc}</div>
+                        )}
+                      </div>
+                      <div className="font-bold text-amber-600">${item.price * item.quantity}</div>
+                    </div>
+                    <div className="flex items-center gap-3 mt-3">
+                      <button onClick={() => updateCartQuantity(item.id, -1)} className="w-7 h-7 bg-stone-100 rounded-full flex items-center justify-center text-stone-600 hover:bg-stone-200"><Minus size={14}/></button>
+                      <span className="text-sm font-bold w-4 text-center">{item.quantity}</span>
+                      <button onClick={() => updateCartQuantity(item.id, 1)} className="w-7 h-7 bg-stone-100 rounded-full flex items-center justify-center text-stone-600 hover:bg-stone-200"><Plus size={14}/></button>
+                    </div>
+                    <button 
+                      onClick={() => removeFromCart(item.id)}
+                      className="absolute top-4 right-4 text-stone-300 hover:text-red-500 transition-colors"
+                    >
+                      <Trash2 size={18} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+            
+            <div className="mt-6 pt-6 border-t border-stone-200">
+              <div className="flex justify-between items-end">
+                <span className="text-stone-500 font-medium">總計金額</span>
+                <span className="text-4xl font-black text-amber-600">${cartTotal}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* 右側：訂購資訊 */}
+          <div className="w-full md:w-1/2 p-6 md:p-8">
+            <h3 className="text-2xl font-bold text-stone-800 mb-6">填寫訂購資訊</h3>
+            <form onSubmit={handleSubmit} className="space-y-5">
+              
+              <div>
+                <label htmlFor="department" className="block text-sm font-bold text-stone-600 mb-2">所屬部門 *</label>
+                <input 
+                  type="text" 
+                  id="department"
+                  placeholder="請輸入您的所屬單位 (如: 財務部、行銷業務部)"
+                  className="w-full px-4 py-3 rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-shadow"
+                  value={buyerInfo.department}
+                  onChange={(e) => setBuyerInfo({...buyerInfo, department: e.target.value})}
+                  required
+                />
+              </div>
+
+              <div>
+                <label htmlFor="name" className="block text-sm font-bold text-stone-600 mb-2">姓名 *</label>
+                <input 
+                  type="text" 
+                  id="name"
+                  placeholder="請輸入真實姓名"
+                  className="w-full px-4 py-3 rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-shadow"
+                  value={buyerInfo.name}
+                  onChange={(e) => setBuyerInfo({...buyerInfo, name: e.target.value})}
+                  required
+                />
+              </div>
+
+              <div>
+                <label htmlFor="phone" className="block text-sm font-bold text-stone-600 mb-2">聯絡電話 (分機或手機) *</label>
+                <input 
+                  type="text" 
+                  id="phone"
+                  placeholder="例如: 0912-345-678 或 分機 123"
+                  className="w-full px-4 py-3 rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-shadow"
+                  value={buyerInfo.phone}
+                  onChange={(e) => setBuyerInfo({...buyerInfo, phone: e.target.value})}
+                  required
+                />
+              </div>
+
+              <div className="pt-4">
+                <button 
+                  type="submit" 
+                  disabled={isSubmitting || cart.length === 0}
+                  className={`w-full py-4 rounded-xl font-bold text-lg text-white transition-all shadow-lg flex justify-center items-center gap-2 btn-pulse
+                    ${(isSubmitting || cart.length === 0) ? 'bg-stone-400 cursor-not-allowed shadow-none' : 'bg-amber-600 hover:bg-amber-700 hover:-translate-y-1 shadow-amber-600/30'}`}
+                >
+                  {isSubmitting ? (
+                    <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  ) : (
+                    <>確認送出訂單 <Check size={20}/></>
+                  )}
+                </button>
+                {cart.length === 0 && (
+                  <p className="text-center text-red-500 text-sm mt-2 font-medium">請先挑選商品加入購物車</p>
+                )}
+              </div>
+            </form>
+          </div>
+
+        </div>
+      </section>
+
+      {/* 頁尾 */}
+      <footer className="text-center text-stone-400 py-8 text-sm">
+        <p>© 2026 Bakery Internal Order System. Made with Love & Flour.</p>
+      </footer>
+
+      {/* --- 全域 UI 疊加層 (Floating UI) --- */}
+      
+      {/* 浮動購物車 */}
+      {totalItems > 0 && (
+        <button
+          onClick={() => cartSectionRef.current?.scrollIntoView({ behavior: 'smooth' })}
+          className="fixed bottom-6 right-6 md:bottom-10 md:right-10 z-40 w-16 h-16 bg-amber-600 text-white rounded-full flex items-center justify-center shadow-2xl hover:bg-amber-700 hover:scale-110 transition-all group border-4 border-white"
+        >
+          <ShoppingCart size={28} className="group-hover:animate-bounce" />
+          <span className="absolute -top-2 -right-2 bg-red-500 text-white text-sm font-black w-7 h-7 flex items-center justify-center rounded-full border-2 border-white shadow-sm">
+            {totalItems}
+          </span>
+        </button>
+      )}
+
+      {/* 加入購物車的 Toast 提示動畫 */}
+      <div 
+        className={`fixed bottom-28 right-6 md:bottom-32 md:right-10 z-50 transition-all duration-300 transform pointer-events-none ${
+          toastMsg ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'
+        }`}
+      >
+        <div className="bg-stone-900/95 backdrop-blur-sm text-white px-5 py-3 rounded-2xl shadow-2xl border border-stone-700 flex items-center gap-3">
+          <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center shrink-0">
+            <Check size={14} className="text-white" strokeWidth={3} />
+          </div>
+          <span className="font-medium text-sm md:text-base">{toastMsg}</span>
+        </div>
+      </div>
+      
+    </div>
+  );
+}
