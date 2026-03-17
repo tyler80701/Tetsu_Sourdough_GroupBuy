@@ -340,32 +340,72 @@
 
           {/* Tetsu 職人理念區 */}
           <section className="max-w-6xl mx-auto px-4 py-8">
-            <div className="bg-amber-900 rounded-3xl p-8 md:p-12 text-white shadow-xl relative overflow-hidden">
-              <div className="absolute -right-10 -bottom-10 opacity-20 text-amber-100 pointer-events-none">
+            <div 
+              className="rounded-3xl p-8 md:p-12 text-white shadow-xl relative overflow-hidden"
+              style={{
+                backgroundImage: "url('https://lh3.googleusercontent.com/pw/AP1GczOxrmkOcuwnt-XWX5oeZGTfKHY-nHBtDpAJz-QdIVLmeFRGs1Rk-UPrXTJTAalCZ-gQXmW3_kPTANSKU6Yd1fx_cZD5lFF4XfXbLmYOKwkLR2tLPnIxOiJlFm1u5B2HRujRSh5KvjUrVdvU2lnQakwq1w=w1108-h1477-s-no-gm?authuser=0')",
+                backgroundSize: 'cover',
+                backgroundPosition: 'center'
+              }}
+            >
+              {/* 深色半透明遮罩，確保文字易讀 */}
+              <div className="absolute inset-0 bg-stone-900/80 pointer-events-none"></div>
+              
+              <div className="absolute -right-10 -bottom-10 opacity-20 text-amber-100 pointer-events-none z-0">
                 <i className="fa-solid fa-wheat-awn text-[300px]"></i>
               </div>
               <div className="relative z-10 max-w-4xl mx-auto">
                 <h2 className="text-3xl md:text-4xl font-bold mb-6 flex items-center gap-3">
                   <i className="fa-solid fa-leaf text-green-400"></i> 為什麼選擇 Tetsu 的天然老麵？
                 </h2>
-                <p className="text-amber-100 text-lg mb-8 leading-relaxed">
+                <p className="text-amber-50 text-lg mb-8 leading-relaxed">
                   自家天然培養老麵酵種，富含<strong>野生酵母、乳酸菌與醋酸菌</strong>！多樣化的菌種能幫你消化難搞的麩質，享受美味<strong>吃了不脹氣</strong>。相較於發酵快卻容易脹氣的商業酵母，我們嚴格掌控發酵時間，讓麵糰不死酸，保留最純粹的麥香。
                 </p>
                 
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
                   {['🌟 低 GI', '🌟 不脹氣', '🌟 不易老化的結構', '🌟 更多發酵風味物質', '🌟 蛋白質分解為鮮味', '🌟 怡人的微酸尾韻'].map(trait => (
-                    <div key={trait} className="bg-amber-800/80 px-4 py-3 rounded-xl border border-amber-700/50 text-amber-50 font-medium flex items-center justify-center text-center">
+                    <div key={trait} className="bg-stone-800/60 backdrop-blur-sm px-4 py-3 rounded-xl border border-stone-600/50 text-amber-50 font-medium flex items-center justify-center text-center">
                       {trait}
                     </div>
                   ))}
                 </div>
 
-                <div className="bg-amber-50 text-amber-950 p-6 rounded-2xl shadow-inner relative">
+                <div className="bg-amber-50/95 backdrop-blur-md text-amber-950 p-6 rounded-2xl shadow-inner relative">
                   <h3 className="font-bold text-xl mb-3 flex items-center gap-2"><i className="fa-solid fa-bread-slice text-[20px] text-amber-600"></i> 頂級麵粉配方</h3>
                   <p className="text-amber-800 leading-relaxed font-medium">
                     使用 <span className="text-amber-600 font-bold">日本北海道麵粉</span> 調和 <span className="text-amber-600 font-bold">歐洲高灰質麵粉</span>，兼具 Q 彈與天然麥香。
                     麵粉甘甜帶生津微酸，空口吃也不口渴！吃不完僅需密封丟冷凍，切片回烤就有如剛出爐的美味。
                   </p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* 職人手撕影音區 (新增) */}
+          <section className="max-w-4xl mx-auto px-4 py-8">
+            <div className="bg-stone-900 rounded-3xl overflow-hidden shadow-2xl flex flex-col md:flex-row items-center relative">
+              {/* 裝飾光暈 */}
+              <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-amber-900/30 to-transparent pointer-events-none"></div>
+              
+              <div className="w-full md:w-1/2 p-8 md:p-12 text-white relative z-10">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-stone-800 text-amber-400 font-bold text-sm mb-4 border border-stone-700">
+                  <i className="fa-solid fa-play text-[12px]"></i> 動態實拍
+                </div>
+                <h2 className="text-3xl md:text-4xl font-bold mb-4 leading-tight">感受天然老麵的<br/><span className="text-amber-500">生命力與 Q 彈</span></h2>
+                <p className="text-stone-300 leading-relaxed">
+                  聽聽這酥脆的表皮聲，看看這充滿韌性的老麵組織！這就是經過長時間低溫發酵，才能孕育出的極致口感。
+                </p>
+              </div>
+              <div className="w-full md:w-1/2 bg-black flex justify-center p-6 relative z-10">
+                <div className="w-full max-w-[280px] rounded-2xl overflow-hidden shadow-xl border border-stone-700 relative" style={{ paddingTop: '177.77%' }}>
+                  <iframe 
+                    className="absolute top-0 left-0 w-full h-full"
+                    src="https://youtube.com/embed/OXMvy4_Uoh0" 
+                    title="YouTube video player" 
+                    frameBorder="0" 
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                    allowFullScreen>
+                  </iframe>
                 </div>
               </div>
             </div>
