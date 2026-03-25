@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tetsu 烘焙坊 | 茹曦專屬天然酵母麵包團購</title>
+  <title>Tetsu 烘焙坊 | 職人手作天然酸種麵包</title>
   
   <!-- SEO & Open Graph Tags -->
-  <meta name="description" content="Tetsu 職人手作天然老麵麵包，低GI、不脹氣！提供多款人氣經典口味與專屬客製款，450克巨無霸大滿足，茹曦專屬優惠團購中。">
-  <meta property="og:title" content="Tetsu 烘焙坊 | 茹曦專屬天然酵母麵包團購">
-  <meta property="og:description" content="Tetsu 職人手作天然老麵麵包，低GI、不脹氣！提供多款人氣經典口味與專屬客製款，450克巨無霸大滿足，茹曦專屬優惠團購中。">
+  <meta name="description" content="Tetsu 職人手作天然老麵麵包，低GI、不脹氣！提供多款人氣經典口味與專屬客製款，450克巨無霸大滿足，限量預購中。">
+  <meta property="og:title" content="Tetsu 烘焙坊 | 職人手作天然酸種麵包">
+  <meta property="og:description" content="Tetsu 職人手作天然老麵麵包，低GI、不脹氣！提供多款人氣經典口味與專屬客製款，450克巨無霸大滿足，限量預購中。">
   <meta property="og:image" content="https://lh3.googleusercontent.com/pw/AP1GczOnVxlPDo5ngMZEsmrTbAkjpRQoKwebHiRUDCsl4ipkTytFFyZeIwX_jLQlVlZT9BQUvgOrNdAinuUsI1rQVejWPrqQ20moymkn8Wj_S5DlNPIrTZqEWtMSfv221_AROMIQZ--VqcjpuIyHlz-c-NaIyQ=w1477-h1108-s-no-gm?authuser=0">
   <meta property="og:type" content="website">
 
@@ -99,7 +99,7 @@
 
     function BakeryLandingPage() {
       const [cart, setCart] = useState([]);
-      const [buyerInfo, setBuyerInfo] = useState({ name: '', phone: '', department: '' });
+      const [buyerInfo, setBuyerInfo] = useState({ name: '', phone: '', note: '' });
       const [isSubmitting, setIsSubmitting] = useState(false);
       const [orderSuccess, setOrderSuccess] = useState(false);
 
@@ -211,8 +211,8 @@
           alert("購物車是空的唷，趕快挑選喜歡的麵包吧！");
           return;
         }
-        if (!buyerInfo.name || !buyerInfo.phone || !buyerInfo.department) {
-          alert("請填寫完整的聯絡資訊與部門！");
+        if (!buyerInfo.name || !buyerInfo.phone) {
+          alert("請填寫完整的姓名與手機號碼！");
           return;
         }
         
@@ -228,7 +228,7 @@
         const payload = {
           name: buyerInfo.name,
           phone: buyerInfo.phone,
-          department: buyerInfo.department,
+          note: buyerInfo.note,
           order: orderDetails,
           total: cartTotal
         };
@@ -287,7 +287,7 @@
           <nav className="fixed top-0 w-full bg-white/90 backdrop-blur-md shadow-sm z-50 px-6 py-4 flex justify-between items-center">
             <div className="flex items-center gap-2 text-amber-700 font-bold text-xl tracking-wider">
               <i className="fa-solid fa-bread-slice text-[28px]"></i>
-              <span>Tetsu 烘焙坊 | 內部專屬</span>
+              <span>Tetsu 烘焙坊</span>
             </div>
             <div className="flex items-center gap-2 font-medium text-amber-900">
               <i className="fa-solid fa-cart-shopping text-[20px]"></i>
@@ -310,7 +310,7 @@
 
             <div className="max-w-4xl mx-auto text-center">
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-red-100 text-red-700 font-bold text-sm mb-6 animate-pulse">
-                <i className="fa-solid fa-fire text-[16px]"></i> 試營運特別企劃 · 限量發售
+                <i className="fa-solid fa-fire text-[16px]"></i> 限量手工製作 · 預約發售
               </div>
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-amber-950 mb-6 leading-tight">
                 Tetsu 職人手作<br/>
@@ -318,7 +318,7 @@
               </h1>
               <p className="text-lg md:text-xl text-stone-600 mb-10 max-w-2xl mx-auto leading-relaxed">
                 野生酵母與乳酸菌的完美平衡，幫你消化難搞的麩質。<br className="hidden md:block"/>
-                <strong className="text-amber-800">低 GI、不脹氣，450克巨無霸份量</strong>，現在為茹曦同仁獻上專屬優惠。
+                <strong className="text-amber-800">低 GI、不脹氣，450克巨無霸份量</strong>，為喜愛好品味的您獻上專屬優惠。
               </p>
 
               {/* 價格大看板 */}
@@ -332,7 +332,7 @@
                   <span>$250</span>
                 </div>
                 <div className="mt-4 text-sm text-amber-800 bg-amber-50 py-2 rounded-lg font-medium">
-                  ✨ 茹曦獨享「友情價」✨
+                  ✨ 線上預訂優惠價 ✨
                 </div>
               </div>
             </div>
@@ -766,19 +766,6 @@
                 <form onSubmit={handleSubmit} className="space-y-5">
                   
                   <div>
-                    <label htmlFor="department" className="block text-sm font-bold text-stone-600 mb-2">所屬部門 *</label>
-                    <input 
-                      type="text" 
-                      id="department"
-                      placeholder="請輸入您的所屬單位 (如: 財務部、行銷業務部)"
-                      className="w-full px-4 py-3 rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-shadow"
-                      value={buyerInfo.department}
-                      onChange={(e) => setBuyerInfo({...buyerInfo, department: e.target.value})}
-                      required
-                    />
-                  </div>
-
-                  <div>
                     <label htmlFor="name" className="block text-sm font-bold text-stone-600 mb-2">姓名 *</label>
                     <input 
                       type="text" 
@@ -792,16 +779,28 @@
                   </div>
 
                   <div>
-                    <label htmlFor="phone" className="block text-sm font-bold text-stone-600 mb-2">聯絡電話 (分機或手機) *</label>
+                    <label htmlFor="phone" className="block text-sm font-bold text-stone-600 mb-2">手機號碼 *</label>
                     <input 
-                      type="text" 
+                      type="tel" 
                       id="phone"
-                      placeholder="例如: 0912-345-678 或 分機 123"
+                      placeholder="例如: 0912345678"
                       className="w-full px-4 py-3 rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-shadow"
                       value={buyerInfo.phone}
                       onChange={(e) => setBuyerInfo({...buyerInfo, phone: e.target.value})}
                       required
                     />
+                  </div>
+
+                  <div>
+                    <label htmlFor="note" className="block text-sm font-bold text-stone-600 mb-2">備註 (選填)</label>
+                    <textarea 
+                      id="note"
+                      placeholder="如果有任何特殊需求，請告訴我們"
+                      rows="2"
+                      className="w-full px-4 py-3 rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-shadow resize-none"
+                      value={buyerInfo.note}
+                      onChange={(e) => setBuyerInfo({...buyerInfo, note: e.target.value})}
+                    ></textarea>
                   </div>
 
                   <div className="pt-4">
@@ -829,7 +828,7 @@
 
           {/* 頁尾 */}
           <footer className="text-center text-stone-400 py-8 text-sm">
-            <p>© 2026 Bakery Internal Order System. Made with Love & Flour.</p>
+            <p>© 2026 Tetsu Bakery. Made with Love & Flour.</p>
           </footer>
 
           {/* --- 全域 UI 疊加層 (Floating UI) --- */}
