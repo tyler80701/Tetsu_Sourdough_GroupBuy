@@ -228,9 +228,10 @@
         const payload = {
           name: buyerInfo.name,
           phone: buyerInfo.phone,
-          note: buyerInfo.note,
+          note: buyerInfo.note || "",
           order: orderDetails,
           total: cartTotal
+          feedback: ""
         };
 
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyWHNKHiuJVL7-_shbfdq9u7hWbkL3b3q5XgJ3GJnWAL66WBZksHwBU4vflGAGh9j36YA/exec'; 
