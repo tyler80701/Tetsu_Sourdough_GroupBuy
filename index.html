@@ -5,19 +5,24 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Tetsu 烘焙坊 | 職人手作天然酸種麵包</title>
   
+  <!-- SEO & Open Graph Tags -->
   <meta name="description" content="Tetsu 職人手作天然老麵麵包，低GI、不脹氣！提供多款人氣經典口味與專屬客製款，450克巨無霸大滿足，限量預購中。">
   <meta property="og:title" content="Tetsu 烘焙坊 | 職人手作天然酸種麵包">
   <meta property="og:description" content="Tetsu 職人手作天然老麵麵包，低GI、不脹氣！提供多款人氣經典口味與專屬客製款，450克巨無霸大滿足，限量預購中。">
   <meta property="og:image" content="https://lh3.googleusercontent.com/pw/AP1GczOnVxlPDo5ngMZEsmrTbAkjpRQoKwebHiRUDCsl4ipkTytFFyZeIwX_jLQlVlZT9BQUvgOrNdAinuUsI1rQVejWPrqQ20moymkn8Wj_S5DlNPIrTZqEWtMSfv221_AROMIQZ--VqcjpuIyHlz-c-NaIyQ=w1477-h1108-s-no-gm?authuser=0">
   <meta property="og:type" content="website">
 
+  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   
+  <!-- FontAwesome 圖示庫 -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
+  <!-- React & ReactDOM -->
   <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   
+  <!-- Babel (用於在瀏覽器編譯 JSX) -->
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
   <style>
@@ -48,7 +53,6 @@
     const { useState, useEffect, useMemo, useCallback, useRef } = React;
 
     // --- 資料區 ---
-    // ⚠️ 非常重要：替換長網址時，網址的「開頭」與「結尾」一定要有單引號 ' ，否則網頁會直接白屏！
     const CAROUSEL_IMAGES = [
       'https://lh3.googleusercontent.com/pw/AP1GczPQmTUcnEOvugEtx-cDKCouMJ4F95r5Hi3G0MxT4Ivdt2lVDOpANpFOE31ykZSTzqxASh0aR1eyRkNOImg82e161tQ9X-YHcKpG8hyHPcwVv17TkRQ5ZrZX2z_nhhaMrgX-tVH3L96QajhksS43zM48SQ=w1108-h1477-s-no-gm?authuser=0',
       'https://lh3.googleusercontent.com/pw/AP1GczPBIXbZyVbie4L-g3L7PTkaeHH2n3371asv7nVwn6xbSVv0I1mJFTrK1Lqiq5f4fyUItNoV3OkQ7x2kUwItOkXu9_rv5Ry1E4ZjdL9sAMiygWsfVZPmN8dG3ZjjXyIVbW3meovvf8RYJ4StpY4-tYI_zQ=w1108-h1477-s-no-gm?authuser=0',
@@ -58,38 +62,43 @@
       'https://lh3.googleusercontent.com/pw/AP1GczNpO7tk5Fp23G5v6iytbJEccThqvbXrLiA8jjrpe0WqVSpZMZTYASuVNsh8_p3i2Izp9CEmQr4-WmhhU-YgEXiXOiI79aXeXaOe9t0YIN6oWgAlmpRhK-m12wQqPAdw5BezJg2VSDKvap95C0KdACIIkw=w1108-h1477-s-no-gm?authuser=0'
     ];
 
+    const SMALL_BREADS = [
+      { id: 's1', name: '原味鹽可頌', desc: '外酥內軟，純粹的奶油香氣，讓人一口接一口。', price: 55, image: 'https://lh3.googleusercontent.com/pw/AP1GczObafyIukxBYKbbVOg8yzUbcTQLY7GV8vYp8c00r2cf4UT9tmvbN0_VAnerKj1jRGrnZByPrfn9h9Ku7YUNGegqXalxTzP3fDpuUBzaWfxwV5j8rCzl3woSsMGhuvv27kdNyLG8G-vPAnRfQ1HN-rJoqg=w675-h900-s-no-gm?authuser=0' },
+      { id: 's2', name: '抹茶鹽可頌', desc: '日式優雅茶香，與微鹹酥脆底層完美結合。', price: 55, image: 'https://lh3.googleusercontent.com/pw/AP1GczOzE_-a6zlI4HOVXtbDxdWbNIrjbYGAPFvKkD_C8gK8xKDydBWk06iHUqr719CWq24_iO9chsLpBiRM3e1MTjHfmiVKfHgM7Cjq3waSEOS2KOwacrNf7MBTkQRVr_uKjqME9ZRuwOIRbBO4B486J_vMbA=w675-h900-s-no-gm?authuser=0' },
+      { id: 's3', name: '原味貝果', desc: '扎實Q彈的老麵口感，越嚼越有天然麥香。', price: 55, image: 'https://lh3.googleusercontent.com/pw/AP1GczOPHP6Zvkb8K39bYsMkDwXiilkwMKJ946XBhdFn2WcYnzi_TDCq6vjQ2UuBf8MTSDavy8y9UDqF19pN7xFMP4oZti6wArniERFYT4KaiIMmZ6MGKqA2vQGYHVxVcW__NNOwyhBz8yTdDXGUJwep76H6kg=w675-h900-s-no-gm?authuser=0' },
+    ];
+
     const CLASSIC_BREADS = [
       { id: 'c1', name: '核桃蔓越莓鄉村麵包', desc: '經典不敗，堅果香氣與酸甜果乾的完美結合。' },
       { id: 'c2', name: '黑橄欖山羊乳酪麵包', desc: '地中海風情，濃郁乳酪與黑橄欖鹹香交織。' },
-      { id: 'c3', name: '巧克力莓果麵包', desc: '藍莓、草莓、蔓越莓，加上苦甜巧克力，奢華享受。' },
       { id: 'c4', name: '抹茶白巧克力麵包', desc: '日式微苦抹茶搭配香甜白巧克力，茶香四溢。' },
       { id: 'c5', name: '自家醃漬雪裡紅培根麵包', desc: '獨家創意鹹麵包，脆口雪裡紅與煙燻培根超對味！' },
     ];
 
-    const CUSTOM_BASES = ['原味', '全麥', '抹茶', '巧克力', '百里香'];
+    const CUSTOM_BASES = ['原味', '全麥', '百里香', '亞麻籽'];
 
     const CUSTOM_FILLINGS = {
       sweet: [
-        { name: '野生藍莓', premium: true },
-        { name: '草莓', premium: false },
-        { name: '開心果', premium: true },
-        { name: '蔓越莓', premium: false },
-        { name: '蘭姆葡萄', premium: false },
-        { name: '蜜紅豆', premium: false },
+        { name: '野生藍莓乾' },
+        { name: '開心果' },
+        { name: '蔓越莓' },
+        { name: '蘭姆葡萄' },
+        { name: '蜜紅豆' }
       ],
       savory: [
-        { name: '黑橄欖', premium: false },
-        { name: '墨西哥辣椒', premium: false },
-        { name: '乳酪', premium: false },
-        { name: '自家醃雪裡紅', premium: false },
-        { name: '培根', premium: false },
-        { name: '油漬番茄', premium: false },
+        { name: '黑橄欖' },
+        { name: '墨西哥辣椒' },
+        { name: '乳酪' },
+        { name: '自家醃雪裡紅' },
+        { name: '培根' },
+        { name: '油漬番茄' },
+        { name: '肉鬆' }
       ],
       neutral: [
-        { name: '核桃', premium: false },
-        { name: '腰果', premium: false },
-        { name: '南瓜子', premium: false },
-        { name: '白玉湯圓', premium: false },
+        { name: '核桃' },
+        { name: '腰果' },
+        { name: '南瓜子' },
+        { name: '白玉麻糬' }
       ]
     };
 
@@ -134,11 +143,9 @@
 
       const currentCustomPrice = useMemo(() => {
         const basePrice = 250;
-        const premiumCount = customSelectedFillings.filter(f => f.premium).length;
         const totalCount = customSelectedFillings.length;
         const extraCountCharge = Math.max(0, totalCount - 2) * 30;
-        const premiumCharge = premiumCount * 30;
-        return basePrice + extraCountCharge + premiumCharge;
+        return basePrice + extraCountCharge;
       }, [customSelectedFillings]);
 
       const handleFillingToggle = (filling) => {
@@ -150,6 +157,17 @@
             return [...prev, filling];
           }
         });
+      };
+
+      const addSmallBreadToCart = (bread) => {
+        setCart(prev => {
+          const existing = prev.find(item => item.id === bread.id);
+          if (existing) {
+            return prev.map(item => item.id === bread.id ? { ...item, quantity: item.quantity + 1 } : item);
+          }
+          return [...prev, { ...bread, type: 'small', quantity: 1 }];
+        });
+        showToast(bread.name);
       };
 
       const addClassicToCart = (bread) => {
@@ -216,19 +234,20 @@
 
         const orderDetails = cart.map(item => {
           if (item.type === 'custom') {
-            return `[客製化] ${item.name}\n  └ ${item.desc}\n  └ 數量: ${item.quantity} (單價$${item.price})`;
+            return `[客製款] ${item.name}\n  └ ${item.desc}\n  └ 數量: ${item.quantity} (單價$${item.price})`;
           }
-          return `[經典] ${item.name} x${item.quantity}`;
+          if (item.type === 'small') {
+            return `[新品] ${item.name} x${item.quantity} (單價$${item.price})`;
+          }
+          return `[經典款] ${item.name} x${item.quantity} (單價$${item.price})`;
         }).join('\n\n');
 
-        // ⚠️ 這裡已幫你將 payload 對齊 GAS 版本，加入了 feedback 與 note || ""
         const payload = {
           name: buyerInfo.name,
           phone: buyerInfo.phone,
-          note: buyerInfo.note || "",
+          note: buyerInfo.note,
           order: orderDetails,
-          total: cartTotal,
-          feedback: "" 
+          total: cartTotal
         };
 
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyWHNKHiuJVL7-_shbfdq9u7hWbkL3b3q5XgJ3GJnWAL66WBZksHwBU4vflGAGh9j36YA/exec'; 
@@ -324,7 +343,7 @@
                 <div className="absolute -top-4 -right-4 bg-red-500 text-white w-16 h-16 rounded-full flex items-center justify-center font-bold rotate-12 shadow-lg border-2 border-white">
                   省$50
                 </div>
-                <div className="text-stone-500 font-medium mb-1">原價 $300 / 顆</div>
+                <div className="text-stone-500 font-medium mb-1">大麵包原價 $300 / 顆</div>
                 <div className="flex items-center justify-center gap-4 text-5xl font-black text-amber-700">
                   <span className="text-3xl line-through text-stone-300">$300</span>
                   <span>$250</span>
@@ -341,7 +360,6 @@
             <div 
               className="rounded-3xl p-8 md:p-12 text-white shadow-xl relative overflow-hidden"
               style={{
-                /* ⚠️ 提醒：如果這裡要換圖片，網址一樣要有單引號包在 url('裡面') */
                 backgroundImage: "url('https://lh3.googleusercontent.com/pw/AP1GczOxrmkOcuwnt-XWX5oeZGTfKHY-nHBtDpAJz-QdIVLmeFRGs1Rk-UPrXTJTAalCZ-gQXmW3_kPTANSKU6Yd1fx_cZD5lFF4XfXbLmYOKwkLR2tLPnIxOiJlFm1u5B2HRujRSh5KvjUrVdvU2lnQakwq1w=w1108-h1477-s-no-gm?authuser=0')",
                 backgroundSize: 'cover',
                 backgroundPosition: 'center'
@@ -380,7 +398,7 @@
             </div>
           </section>
 
-          {/* 職人手撕影音區 (新增) */}
+          {/* 職人手撕影音區 */}
           <section className="max-w-4xl mx-auto px-4 py-8">
             <div className="bg-stone-900 rounded-3xl overflow-hidden shadow-2xl flex flex-col md:flex-row items-center relative">
               {/* 裝飾光暈 */}
@@ -414,7 +432,7 @@
           <section className="max-w-4xl mx-auto px-4 py-8">
             <div className="flex items-center justify-center gap-2 mb-6">
               <i className="fa-solid fa-camera text-[24px] text-stone-400"></i>
-              <h2 className="text-xl font-bold text-stone-500 tracking-wider">職人手作實拍</h2>
+              <h2 className="text-xl font-bold text-stone-500 tracking-wider">職人大麵包實拍</h2>
             </div>
             
             <div className="relative group rounded-3xl overflow-hidden shadow-xl bg-stone-100 h-[500px] md:h-[600px]">
@@ -499,15 +517,52 @@
             </div>
           </section>
 
+          {/* 新品推薦：小巧美味區 */}
+          <section className="max-w-6xl mx-auto px-4 py-12">
+            <div className="flex items-center gap-3 mb-8">
+              <i className="fa-solid fa-seedling text-[24px] text-green-600"></i>
+              <h2 className="text-3xl font-bold text-amber-950">新品上市 | 小巧美味</h2>
+              <div className="h-px bg-amber-200 flex-grow ml-4"></div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {SMALL_BREADS.map(bread => (
+                <div key={bread.id} className="bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all border border-stone-100 p-6 flex flex-col relative overflow-hidden group">
+                  <div className="relative h-64 mb-4 overflow-hidden rounded-xl">
+                    <img src={bread.image} alt={bread.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                    <div className="absolute top-2 left-2 bg-white/90 backdrop-blur-sm px-2 py-1 rounded text-xs font-bold text-amber-800 shadow-sm">
+                      免低消輕鬆帶
+                    </div>
+                  </div>
+                  
+                  <div className="relative z-10 flex-grow">
+                    <h3 className="text-xl font-bold text-stone-800 mb-2">{bread.name}</h3>
+                    <p className="text-stone-500 text-sm mb-6">{bread.desc}</p>
+                  </div>
+                  
+                  <div className="relative z-10 flex items-center justify-between mt-auto pt-4 border-t border-stone-50">
+                    <div className="font-black text-2xl text-amber-600">$55</div>
+                    <button 
+                      onClick={() => addSmallBreadToCart(bread)}
+                      className="flex items-center gap-2 bg-stone-800 text-white hover:bg-amber-600 px-4 py-2.5 rounded-xl font-bold transition-colors shadow-sm"
+                    >
+                      <i className="fa-solid fa-plus text-[18px]"></i> 加入
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+
           {/* 經典口味區 */}
           <section className="max-w-6xl mx-auto px-4 py-12">
             <div className="flex items-center gap-3 mb-8">
               <i className="fa-solid fa-star text-[24px] text-amber-500"></i>
-              <h2 className="text-3xl font-bold text-amber-950">人氣經典口味</h2>
+              <h2 className="text-3xl font-bold text-amber-950">人氣經典大麵包</h2>
               <div className="h-px bg-amber-200 flex-grow ml-4"></div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
               {CLASSIC_BREADS.map(bread => (
                 <div key={bread.id} className="bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all border border-stone-100 p-6 flex flex-col relative overflow-hidden group">
                   <div className="absolute -right-6 -top-6 w-24 h-24 bg-amber-50 rounded-full group-hover:bg-amber-100 transition-colors z-0"></div>
@@ -542,15 +597,13 @@
                   <div className="inline-flex items-center justify-center w-16 h-16 bg-amber-100 text-amber-600 rounded-full mb-4">
                     <i className="fa-solid fa-wand-magic-sparkles text-[32px]"></i>
                   </div>
-                  <h2 className="text-3xl md:text-4xl font-bold text-amber-950 mb-3">專屬客製款</h2>
+                  <h2 className="text-3xl md:text-4xl font-bold text-amber-950 mb-3">專屬客製款 (大麵包)</h2>
                   <p className="text-amber-800 font-medium">打造你夢想中的完美麵包（須2天前預訂）</p>
                   
                   <div className="mt-6 flex flex-col md:flex-row items-center justify-center gap-4 text-sm text-stone-600 bg-white inline-block px-6 py-4 rounded-2xl shadow-sm border border-amber-100">
                     <div className="flex items-center gap-2"><i className="fa-solid fa-check text-[16px] text-green-500"></i> 自選麵糰 + 任2樣配料 = $250</div>
                     <div className="hidden md:block w-px h-4 bg-stone-300"></div>
                     <div className="flex items-center gap-2"><i className="fa-solid fa-circle-info text-[16px] text-amber-500"></i> 超過2樣，每加一樣 +$30</div>
-                    <div className="hidden md:block w-px h-4 bg-stone-300"></div>
-                    <div className="flex items-center gap-2"><i className="fa-solid fa-star text-[16px] text-purple-500"></i> 高成本配料(標示*) 固定 +$30</div>
                   </div>
                 </div>
 
@@ -604,7 +657,6 @@
                                 >
                                   {isSelected && <i className="fa-solid fa-check text-[14px]"></i>}
                                   {filling.name}
-                                  {filling.premium && <span className={`${isSelected ? 'text-amber-200' : 'text-purple-500'} ml-1`}>*</span>}
                                 </button>
                               )
                             })}
@@ -633,7 +685,7 @@
                             ) : (
                               customSelectedFillings.map(f => (
                                 <span key={f.name} className="font-bold text-stone-800 text-sm bg-stone-100 px-2 py-0.5 rounded mb-1">
-                                  {f.name} {f.premium && '(+$30)'}
+                                  {f.name}
                                 </span>
                               ))
                             )}
@@ -647,12 +699,9 @@
                           <span className="text-2xl font-black text-amber-600">${currentCustomPrice}</span>
                         </div>
                         <div className="text-xs text-amber-700/80 space-y-1 mt-3 border-t border-amber-200/50 pt-2">
-                          <p>基本價(含2樣一般配料): $250</p>
+                          <p>基本價(含2樣配料): $250</p>
                           {customSelectedFillings.length > 2 && (
                             <p>超過 {customSelectedFillings.length - 2} 樣配料: +${(customSelectedFillings.length - 2) * 30}</p>
-                          )}
-                          {customSelectedFillings.filter(f=>f.premium).length > 0 && (
-                            <p>高成本配料 (*): +${customSelectedFillings.filter(f=>f.premium).length * 30}</p>
                           )}
                         </div>
                       </div>
@@ -689,13 +738,10 @@
                       <div className="mt-6 pt-6 border-t border-stone-100 space-y-3">
                         <p className="text-xs text-stone-400 font-bold uppercase tracking-wider mb-2">💡 價格試算範例</p>
                         <div className="text-xs text-stone-500 bg-stone-50 p-2 rounded">
-                          <strong className="text-stone-700">範例一：</strong> 全麥 + 核桃 + 蔓越莓 = $250
+                          <strong className="text-stone-700">範例一：</strong> 亞麻籽 + 核桃 + 蔓越莓 = $250
                         </div>
                         <div className="text-xs text-stone-500 bg-stone-50 p-2 rounded">
-                          <strong className="text-stone-700">範例二：</strong> 抹茶 + 紅豆 + 乳酪 + 白玉湯圓 = 250+30(第三樣) = $280
-                        </div>
-                        <div className="text-xs text-stone-500 bg-stone-50 p-2 rounded">
-                          <strong className="text-stone-700">範例三：</strong> 百里香 + 開心果* + 乳酪 = 250+30(高成本) = $280
+                          <strong className="text-stone-700">範例二：</strong> 全麥 + 紅豆 + 乳酪 + 白玉麻糬 = 250+30(第三樣) = $280
                         </div>
                       </div>
                     </div>
