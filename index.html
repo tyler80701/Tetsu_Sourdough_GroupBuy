@@ -5,24 +5,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Tetsu 烘焙坊 | 職人手作天然酸種麵包</title>
   
-  <!-- SEO & Open Graph Tags -->
   <meta name="description" content="Tetsu 職人手作天然老麵麵包，低GI、不脹氣！提供多款人氣經典口味與專屬客製款，450克巨無霸大滿足，限量預購中。">
   <meta property="og:title" content="Tetsu 烘焙坊 | 職人手作天然酸種麵包">
   <meta property="og:description" content="Tetsu 職人手作天然老麵麵包，低GI、不脹氣！提供多款人氣經典口味與專屬客製款，450克巨無霸大滿足，限量預購中。">
   <meta property="og:image" content="https://lh3.googleusercontent.com/pw/AP1GczOnVxlPDo5ngMZEsmrTbAkjpRQoKwebHiRUDCsl4ipkTytFFyZeIwX_jLQlVlZT9BQUvgOrNdAinuUsI1rQVejWPrqQ20moymkn8Wj_S5DlNPIrTZqEWtMSfv221_AROMIQZ--VqcjpuIyHlz-c-NaIyQ=w1477-h1108-s-no-gm?authuser=0">
   <meta property="og:type" content="website">
 
-  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   
-  <!-- FontAwesome 圖示庫 -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-  <!-- React & ReactDOM -->
   <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   
-  <!-- Babel (用於在瀏覽器編譯 JSX) -->
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
   <style>
@@ -44,6 +39,15 @@
     .btn-pulse {
       animation: pulseGlow 2s infinite;
     }
+
+    /* 隱藏捲軸但保留橫向滾動功能 (用於手機版導覽列) */
+    .hide-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .hide-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
   </style>
 </head>
 <body>
@@ -63,16 +67,17 @@
     ];
 
     const SMALL_BREADS = [
-      { id: 's1', name: '原味鹽可頌', desc: '外酥內軟，純粹的奶油香氣，讓人一口接一口。', price: 55, image: 'https://lh3.googleusercontent.com/pw/AP1GczObafyIukxBYKbbVOg8yzUbcTQLY7GV8vYp8c00r2cf4UT9tmvbN0_VAnerKj1jRGrnZByPrfn9h9Ku7YUNGegqXalxTzP3fDpuUBzaWfxwV5j8rCzl3woSsMGhuvv27kdNyLG8G-vPAnRfQ1HN-rJoqg=w675-h900-s-no-gm?authuser=0' },
-      { id: 's2', name: '抹茶鹽可頌', desc: '日式優雅茶香，與微鹹酥脆底層完美結合。', price: 55, image: 'https://lh3.googleusercontent.com/pw/AP1GczOzE_-a6zlI4HOVXtbDxdWbNIrjbYGAPFvKkD_C8gK8xKDydBWk06iHUqr719CWq24_iO9chsLpBiRM3e1MTjHfmiVKfHgM7Cjq3waSEOS2KOwacrNf7MBTkQRVr_uKjqME9ZRuwOIRbBO4B486J_vMbA=w675-h900-s-no-gm?authuser=0' },
-      { id: 's3', name: '原味貝果', desc: '扎實Q彈的老麵口感，越嚼越有天然麥香。', price: 55, image: 'https://lh3.googleusercontent.com/pw/AP1GczOPHP6Zvkb8K39bYsMkDwXiilkwMKJ946XBhdFn2WcYnzi_TDCq6vjQ2UuBf8MTSDavy8y9UDqF19pN7xFMP4oZti6wArniERFYT4KaiIMmZ6MGKqA2vQGYHVxVcW__NNOwyhBz8yTdDXGUJwep76H6kg=w675-h900-s-no-gm?authuser=0' },
+      { id: 's1', category: 'croissant', categoryName: '鹽可頌系列', name: '原味鹽可頌', desc: '外酥內軟，純粹的奶油香氣，讓人一口接一口。', price: 55, image: 'https://lh3.googleusercontent.com/pw/AP1GczObafyIukxBYKbbVOg8yzUbcTQLY7GV8vYp8c00r2cf4UT9tmvbN0_VAnerKj1jRGrnZByPrfn9h9Ku7YUNGegqXalxTzP3fDpuUBzaWfxwV5j8rCzl3woSsMGhuvv27kdNyLG8G-vPAnRfQ1HN-rJoqg=w675-h900-s-no-gm?authuser=0' },
+      { id: 's2', category: 'croissant', categoryName: '鹽可頌系列', name: '全麥鹽可頌', desc: '融入全麥的天然麥香，口感層次更加豐富。', price: 55, image: 'https://lh3.googleusercontent.com/pw/AP1GczObafyIukxBYKbbVOg8yzUbcTQLY7GV8vYp8c00r2cf4UT9tmvbN0_VAnerKj1jRGrnZByPrfn9h9Ku7YUNGegqXalxTzP3fDpuUBzaWfxwV5j8rCzl3woSsMGhuvv27kdNyLG8G-vPAnRfQ1HN-rJoqg=w675-h900-s-no-gm?authuser=0' },
+      { id: 's3', category: 'croissant', categoryName: '鹽可頌系列', name: '抹茶白巧克力鹽可頌', desc: '日式優雅茶香，與微鹹酥脆底層完美結合。', price: 55, image: 'https://lh3.googleusercontent.com/pw/AP1GczOzE_-a6zlI4HOVXtbDxdWbNIrjbYGAPFvKkD_C8gK8xKDydBWk06iHUqr719CWq24_iO9chsLpBiRM3e1MTjHfmiVKfHgM7Cjq3waSEOS2KOwacrNf7MBTkQRVr_uKjqME9ZRuwOIRbBO4B486J_vMbA=w675-h900-s-no-gm?authuser=0' },
+      { id: 'b1', category: 'bagel', categoryName: '貝果系列', name: '美式經典原味貝果', desc: '表面撒上芝麻與蒜粒，扎實Q彈的老麵口感。', price: 55, image: 'https://lh3.googleusercontent.com/pw/AP1GczOPHP6Zvkb8K39bYsMkDwXiilkwMKJ946XBhdFn2WcYnzi_TDCq6vjQ2UuBf8MTSDavy8y9UDqF19pN7xFMP4oZti6wArniERFYT4KaiIMmZ6MGKqA2vQGYHVxVcW__NNOwyhBz8yTdDXGUJwep76H6kg=w675-h900-s-no-gm?authuser=0' },
+      { id: 'b2', category: 'bagel', categoryName: '貝果系列', name: '乳酪絲貝果', desc: '表面鋪滿香濃乳酪絲烤至金黃，鹹香迷人。', price: 55, image: 'https://lh3.googleusercontent.com/pw/AP1GczOPHP6Zvkb8K39bYsMkDwXiilkwMKJ946XBhdFn2WcYnzi_TDCq6vjQ2UuBf8MTSDavy8y9UDqF19pN7xFMP4oZti6wArniERFYT4KaiIMmZ6MGKqA2vQGYHVxVcW__NNOwyhBz8yTdDXGUJwep76H6kg=w675-h900-s-no-gm?authuser=0' },
+      { id: 'b3', category: 'bagel', categoryName: '貝果系列', name: '藍莓乳酪丁貝果', desc: '揉入藍莓與乳酪丁，酸甜不膩口的完美搭配。', price: 65, image: 'https://lh3.googleusercontent.com/pw/AP1GczOPHP6Zvkb8K39bYsMkDwXiilkwMKJ946XBhdFn2WcYnzi_TDCq6vjQ2UuBf8MTSDavy8y9UDqF19pN7xFMP4oZti6wArniERFYT4KaiIMmZ6MGKqA2vQGYHVxVcW__NNOwyhBz8yTdDXGUJwep76H6kg=w675-h900-s-no-gm?authuser=0' },
     ];
 
     const CLASSIC_BREADS = [
       { id: 'c1', name: '核桃蔓越莓鄉村麵包', desc: '經典不敗，堅果香氣與酸甜果乾的完美結合。' },
-      { id: 'c2', name: '黑橄欖山羊乳酪麵包', desc: '地中海風情，濃郁乳酪與黑橄欖鹹香交織。' },
       { id: 'c4', name: '抹茶白巧克力麵包', desc: '日式微苦抹茶搭配香甜白巧克力，茶香四溢。' },
-      { id: 'c5', name: '自家醃漬雪裡紅培根麵包', desc: '獨家創意鹹麵包，脆口雪裡紅與煙燻培根超對味！' },
     ];
 
     const CUSTOM_BASES = ['原味', '全麥', '百里香', '亞麻籽'];
@@ -109,6 +114,11 @@
       const [orderSuccess, setOrderSuccess] = useState(false);
 
       const [toastMsg, setToastMsg] = useState('');
+      
+      // 區塊定位 Refs
+      const smallBreadsRef = useRef(null);
+      const classicBreadsRef = useRef(null);
+      const customBreadsRef = useRef(null);
       const cartSectionRef = useRef(null);
 
       const [currentSlide, setCurrentSlide] = useState(0);
@@ -124,6 +134,10 @@
         setTimeout(() => {
           setToastMsg('');
         }, 2500);
+      };
+
+      const scrollToSection = (ref) => {
+        ref.current?.scrollIntoView({ behavior: 'smooth' });
       };
 
       const nextSlide = useCallback(() => {
@@ -165,7 +179,7 @@
           if (existing) {
             return prev.map(item => item.id === bread.id ? { ...item, quantity: item.quantity + 1 } : item);
           }
-          return [...prev, { ...bread, type: 'small', quantity: 1 }];
+          return [...prev, { ...bread, type: 'small', category: bread.category, quantity: 1 }];
         });
         showToast(bread.name);
       };
@@ -225,6 +239,20 @@
           alert("購物車是空的唷，趕快挑選喜歡的麵包吧！");
           return;
         }
+
+        // --- 購物車防呆：小麵包出爐門檻驗證 ---
+        const croissantCount = cart.filter(item => item.category === 'croissant').reduce((sum, item) => sum + item.quantity, 0);
+        const bagelCount = cart.filter(item => item.category === 'bagel').reduce((sum, item) => sum + item.quantity, 0);
+
+        if (croissantCount > 0 && croissantCount < 6) {
+          alert("【鹽可頌系列】最少需訂購 6 顆（可任搭口味）才能達出爐門檻喔！");
+          return;
+        }
+        if (bagelCount > 0 && bagelCount < 6) {
+          alert("【貝果系列】最少需訂購 6 顆（可任搭口味）才能達出爐門檻喔！");
+          return;
+        }
+
         if (!buyerInfo.name || !buyerInfo.phone) {
           alert("請填寫完整的姓名與手機號碼！");
           return;
@@ -300,20 +328,49 @@
 
       return (
         <div className="min-h-screen bg-[#FDFBF7] font-sans text-stone-800 pb-32">
-          {/* 導覽列 */}
-          <nav className="fixed top-0 w-full bg-white/90 backdrop-blur-md shadow-sm z-50 px-6 py-4 flex justify-between items-center">
-            <div className="flex items-center gap-2 text-amber-700 font-bold text-xl tracking-wider">
-              <i className="fa-solid fa-bread-slice text-[28px]"></i>
-              <span>Tetsu 烘焙坊</span>
-            </div>
-            <div className="flex items-center gap-2 font-medium text-amber-900">
-              <i className="fa-solid fa-cart-shopping text-[20px]"></i>
-              <span className="bg-amber-100 px-2 py-0.5 rounded-full text-sm font-bold">{totalItems}</span>
+          
+          {/* 導覽列 (加入內部導航按鈕) */}
+          <nav className="fixed top-0 w-full bg-white/95 backdrop-blur-md shadow-sm z-50 transition-all border-b border-stone-100">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex justify-between items-center">
+              
+              {/* Logo */}
+              <div 
+                className="flex items-center gap-2 text-amber-700 font-bold text-xl tracking-wider cursor-pointer whitespace-nowrap"
+                onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+              >
+                <i className="fa-solid fa-bread-slice text-[24px] md:text-[28px]"></i>
+                <span className="hidden md:block">Tetsu 烘焙坊</span>
+              </div>
+
+              {/* 中間導覽分類 (可橫向滑動以適應小螢幕) */}
+              <div className="flex-1 overflow-x-auto hide-scrollbar mx-3 md:mx-6">
+                <div className="flex items-center justify-center gap-2 md:gap-6 min-w-max">
+                  <button onClick={() => scrollToSection(smallBreadsRef)} className="text-stone-600 hover:text-amber-700 font-bold text-sm md:text-base px-3 py-1.5 rounded-full hover:bg-amber-50 transition-colors">
+                    小巧美味
+                  </button>
+                  <button onClick={() => scrollToSection(classicBreadsRef)} className="text-stone-600 hover:text-amber-700 font-bold text-sm md:text-base px-3 py-1.5 rounded-full hover:bg-amber-50 transition-colors">
+                    經典大麵包
+                  </button>
+                  <button onClick={() => scrollToSection(customBreadsRef)} className="text-stone-600 hover:text-amber-700 font-bold text-sm md:text-base px-3 py-1.5 rounded-full hover:bg-amber-50 transition-colors">
+                    專屬客製款
+                  </button>
+                </div>
+              </div>
+
+              {/* 購物車 */}
+              <div 
+                className="flex items-center gap-1 md:gap-2 font-medium text-amber-900 cursor-pointer hover:opacity-80 transition-opacity whitespace-nowrap bg-amber-50 px-3 py-1.5 rounded-full"
+                onClick={() => scrollToSection(cartSectionRef)}
+              >
+                <i className="fa-solid fa-cart-shopping text-[18px]"></i>
+                <span className="bg-amber-600 text-white px-2 py-0.5 rounded-full text-xs font-bold">{totalItems}</span>
+              </div>
+
             </div>
           </nav>
 
           {/* Hero Section */}
-          <section className="relative pt-24 pb-16 px-4 overflow-hidden">
+          <section className="relative pt-28 pb-16 px-4 overflow-hidden">
             <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-amber-100/50 to-transparent -z-10"></div>
             
             {/* SVG 動畫點綴 */}
@@ -517,21 +574,24 @@
             </div>
           </section>
 
-          {/* 新品推薦：小巧美味區 */}
-          <section className="max-w-6xl mx-auto px-4 py-12">
-            <div className="flex items-center gap-3 mb-8">
-              <i className="fa-solid fa-seedling text-[24px] text-green-600"></i>
-              <h2 className="text-3xl font-bold text-amber-950">新品上市 | 小巧美味</h2>
-              <div className="h-px bg-amber-200 flex-grow ml-4"></div>
+          {/* 新品推薦：小巧美味區 (設定 Ref) */}
+          <section ref={smallBreadsRef} className="max-w-6xl mx-auto px-4 py-12 scroll-mt-20">
+            <div className="mb-8">
+              <div className="flex items-center gap-3 mb-2">
+                <i className="fa-solid fa-seedling text-[24px] text-green-600"></i>
+                <h2 className="text-3xl font-bold text-amber-950">新品上市 | 小巧美味</h2>
+                <div className="h-px bg-amber-200 flex-grow ml-4"></div>
+              </div>
+              <p className="text-stone-600 md:ml-10">💡 鹽可頌系列 / 貝果系列，各系列皆需<strong className="text-amber-700">任搭滿 6 顆</strong>才達出爐門檻喔！</p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {SMALL_BREADS.map(bread => (
                 <div key={bread.id} className="bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all border border-stone-100 p-6 flex flex-col relative overflow-hidden group">
                   <div className="relative h-64 mb-4 overflow-hidden rounded-xl">
                     <img src={bread.image} alt={bread.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
                     <div className="absolute top-2 left-2 bg-white/90 backdrop-blur-sm px-2 py-1 rounded text-xs font-bold text-amber-800 shadow-sm">
-                      免低消輕鬆帶
+                      {bread.categoryName}任搭滿6顆
                     </div>
                   </div>
                   
@@ -541,7 +601,7 @@
                   </div>
                   
                   <div className="relative z-10 flex items-center justify-between mt-auto pt-4 border-t border-stone-50">
-                    <div className="font-black text-2xl text-amber-600">$55</div>
+                    <div className="font-black text-2xl text-amber-600">${bread.price}</div>
                     <button 
                       onClick={() => addSmallBreadToCart(bread)}
                       className="flex items-center gap-2 bg-stone-800 text-white hover:bg-amber-600 px-4 py-2.5 rounded-xl font-bold transition-colors shadow-sm"
@@ -554,8 +614,8 @@
             </div>
           </section>
 
-          {/* 經典口味區 */}
-          <section className="max-w-6xl mx-auto px-4 py-12">
+          {/* 經典口味區 (設定 Ref) */}
+          <section ref={classicBreadsRef} className="max-w-6xl mx-auto px-4 py-12 scroll-mt-20">
             <div className="flex items-center gap-3 mb-8">
               <i className="fa-solid fa-star text-[24px] text-amber-500"></i>
               <h2 className="text-3xl font-bold text-amber-950">人氣經典大麵包</h2>
@@ -589,8 +649,8 @@
             </div>
           </section>
 
-          {/* 客製化專區 */}
-          <section className="max-w-6xl mx-auto px-4 py-16">
+          {/* 客製化專區 (設定 Ref) */}
+          <section ref={customBreadsRef} className="max-w-6xl mx-auto px-4 py-16 scroll-mt-20">
             <div className="bg-gradient-to-br from-stone-900 to-amber-950 rounded-3xl p-1 shadow-2xl overflow-hidden">
               <div className="bg-[#FAF7F2] rounded-[1.4rem] p-6 md:p-10">
                 <div className="text-center mb-10">
