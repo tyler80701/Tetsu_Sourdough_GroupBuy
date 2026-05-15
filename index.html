@@ -179,7 +179,8 @@
           if (existing) {
             return prev.map(item => item.id === bread.id ? { ...item, quantity: item.quantity + 1 } : item);
           }
-          return [...prev, { ...bread, type: 'small', category: bread.category, quantity: 1 }];
+          // 初始加入即為 6 顆，優化使用者體驗
+          return [...prev, { ...bread, type: 'small', category: bread.category, quantity: 6 }];
         });
         showToast(bread.name);
       };
@@ -219,7 +220,8 @@
       const updateCartQuantity = (id, delta) => {
         setCart(prev => prev.map(item => {
           if (item.id === id) {
-            const minQty = 1;
+            // 小麵包系列最低數量為 6，其他大麵包最低數量為 1
+            const minQty = item.type === 'small' ? 6 : 1;
             const newQty = Math.max(minQty, item.quantity + delta);
             return { ...item, quantity: newQty };
           }
@@ -241,15 +243,10 @@
         }
 
         // --- 購物車防呆：小麵包出爐門檻驗證 ---
-        const croissantCount = cart.filter(item => item.category === 'croissant').reduce((sum, item) => sum + item.quantity, 0);
-        const bagelCount = cart.filter(item => item.category === 'bagel').reduce((sum, item) => sum + item.quantity, 0);
+        const invalidSmallBreads = cart.filter(item => item.type === 'small' && item.quantity < 6);
 
-        if (croissantCount > 0 && croissantCount < 6) {
-          alert("【鹽可頌系列】最少需訂購 6 顆（可任搭口味）才能達出爐門檻喔！");
-          return;
-        }
-        if (bagelCount > 0 && bagelCount < 6) {
-          alert("【貝果系列】最少需訂購 6 顆（可任搭口味）才能達出爐門檻喔！");
+        if (invalidSmallBreads.length > 0) {
+          alert(`【小巧美味系列】每一款單一口味最少需訂購 6 顆才能達出爐門檻喔！\n您目前的「${invalidSmallBreads[0].name}」數量不足。`);
           return;
         }
 
@@ -582,7 +579,7 @@
                 <h2 className="text-3xl font-bold text-amber-950">新品上市 | 小巧美味</h2>
                 <div className="h-px bg-amber-200 flex-grow ml-4"></div>
               </div>
-              <p className="text-stone-600 md:ml-10">💡 鹽可頌系列 / 貝果系列，各系列皆需<strong className="text-amber-700">任搭滿 6 顆</strong>才達出爐門檻喔！</p>
+              <p className="text-stone-600 md:ml-10">💡 小巧美味系列（鹽可頌/貝果），每款<strong className="text-amber-700">單一口味皆需滿 6 顆</strong>才達出爐門檻喔！</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -591,7 +588,7 @@
                   <div className="relative h-64 mb-4 overflow-hidden rounded-xl">
                     <img src={bread.image} alt={bread.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
                     <div className="absolute top-2 left-2 bg-white/90 backdrop-blur-sm px-2 py-1 rounded text-xs font-bold text-amber-800 shadow-sm">
-                      {bread.categoryName}任搭滿6顆
+                      單一口味滿6顆起
                     </div>
                   </div>
                   
@@ -842,7 +839,13 @@
                           <div className="font-bold text-amber-600">${item.price * item.quantity}</div>
                         </div>
                         <div className="flex items-center gap-3 mt-3">
-                          <button onClick={() => updateCartQuantity(item.id, -1)} className="w-7 h-7 bg-stone-100 rounded-full flex items-center justify-center text-stone-600 hover:bg-stone-200"><i className="fa-solid fa-minus text-[14px]"></i></button>
+                          <button 
+                            onClick={() => updateCartQuantity(item.id, -1)} 
+                            disabled={item.quantity <= (item.type === 'small' ? 6 : 1)}
+                            className={`w-7 h-7 rounded-full flex items-center justify-center text-stone-600 transition-colors ${item.quantity <= (item.type === 'small' ? 6 : 1) ? 'bg-stone-50 opacity-50 cursor-not-allowed' : 'bg-stone-100 hover:bg-stone-200'}`}
+                          >
+                            <i className="fa-solid fa-minus text-[14px]"></i>
+                          </button>
                           <span className="text-sm font-bold w-4 text-center">{item.quantity}</span>
                           <button onClick={() => updateCartQuantity(item.id, 1)} className="w-7 h-7 bg-stone-100 rounded-full flex items-center justify-center text-stone-600 hover:bg-stone-200"><i className="fa-solid fa-plus text-[14px]"></i></button>
                         </div>
